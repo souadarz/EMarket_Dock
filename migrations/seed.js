@@ -1,9 +1,19 @@
+
+import DotenvFlow from "dotenv-flow";
+
+// --- Forcer l'utilisation du bon fichier d'environnement ---
+DotenvFlow.config({ node_env: "production", override: true });
+
+console.log("====================================");
+console.log("🔧 Environment:", process.env.NODE_ENV);
+console.log("🔗 Mongo URI:", process.env.MONGO_URI);
+console.log("====================================");
+// dotenv.config();
+
 import mongoose from 'mongoose';
-import dotenv from 'dotenv';
+// import dotenv from 'dotenv';
 import { faker } from '@faker-js/faker';
 import { Product, Category, ProductCategory, User } from '../models/Index.js';
-
-dotenv.config();
 
 async function seedDatabase() {
   try {

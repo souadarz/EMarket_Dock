@@ -1,13 +1,18 @@
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
 
+const serverUrl =
+  process.env.NODE_ENV === "production"
+    ? "https://emarket-api-hjg6hghpgsbkd3e2.italynorth-01.azurewebsites.net"
+    : "http://localhost:3000";
+
 // Base configuration
 const baseDefinition = {
   openapi: '3.0.0',
   servers: [
     {
-      url: 'http://localhost:3000',
-      description: 'Development server'
+      url: serverUrl,
+      description: 'server URL',
     }
   ]
 };
@@ -47,15 +52,15 @@ const swaggerOptions = {
   swaggerOptions: {
     urls: [
       {
-        url: '/api-docs/v1/swagger.json',
+        url: `${serverUrl}/api-docs/v1/swagger.json`,
         name: 'V1 - Stable'
       },
       {
-        url: '/api-docs/v2/swagger.json',
+        url: `${serverUrl}/api-docs/v2/swagger.json`,
         name: 'V2 - Latest'
       }
     ],
-    'urls.primaryName': 'V2 - Latest' // Set default version
+    'urls.primaryName': 'V2 - Latest'
   }
 };
 

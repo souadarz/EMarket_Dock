@@ -1,36 +1,57 @@
+
 services:
-  mongo:
+  app:
+    build:
+      context: .
+    container_name: express_app1
+    env_file:
+      - .env.production
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    networks:
+      - dev_net1
+    command: ["npm", "run", "dev"]
+    depends_on:
+      mongoo:
+        condition: service_healthy
+      rediss:
+        condition: service_started
+
+  mongoo:
     image: mongo:7.0
-    container_name: mongo
+    container_name: mongoo
     command: ["--replSet", "rs0", "--bind_ip_all"]
     ports:
       - "27017:27017"
     volumes:
-      - mongo-data:/data/db
+      - mongoo-data:/data/db
     networks:
-      - dev_net
+      - dev_net1
     healthcheck:
-      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'localhost:27017'}]}) }" | mongosh --quiet
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'mongoo:27017'}]}) }" | mongosh --quiet
       interval: 5s
       timeout: 10s
       retries: 5
       start_period: 10s
-  redis:
+
+  rediss:
     image: redis:7-alpine
-    container_name: redis
+    container_name: rediss
     ports:
       - "6379:6379"
     volumes:
-      - redis-data:/data
+      - rediss-data:/data
     networks:
-      - dev_net
+      - dev_net1
     command: redis-server --appendonly yes
 
 volumes:
-  redis-data:
-  mongo-data:
+  rediss-data:
+  mongoo-data:
 
 networks:
-  dev_net:
+  dev_net1:
     driver: bridge
-
